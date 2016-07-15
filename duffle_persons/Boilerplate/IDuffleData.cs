@@ -17,29 +17,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-namespace duffle_persons.Models
+namespace duffle_persons.Boilerplate
 {
     using System;
-    using Amazon.DynamoDBv2.DataModel;
-    using Boilerplate;
 
-    [DynamoDBTable("Owner")]
-    public class Owner : IDuffleData
+    interface IDuffleData
     {
-        [DynamoDBHashKey]
-        public Guid id { get; set; }
-
-        public string FirstName { get; set; }
-
-        public string LastName { get; set; }
-
-        public DateTime? CreatedTime { get; private set; }
-
-        public DateTime? LastUpdatedTime { get; private set; }
-
-        public override string ToString()
-        {
-            return String.Format("{0} {1}", FirstName, LastName);
-        }
+        Guid id { get; }
+        DateTime? CreatedTime { get; }
+        DateTime? LastUpdatedTime { get; }
     }
 }

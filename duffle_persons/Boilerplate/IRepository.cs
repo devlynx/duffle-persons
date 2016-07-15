@@ -17,29 +17,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-namespace duffle_persons.Models
+namespace duffle_persons.Boilerplate
 {
-    using System;
-    using Amazon.DynamoDBv2.DataModel;
-    using Boilerplate;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
 
-    [DynamoDBTable("Owner")]
-    public class Owner : IDuffleData
+    public interface IRepository<T>
     {
-        [DynamoDBHashKey]
-        public Guid id { get; set; }
+        Task<bool> AddOrReplaceAsync(T owner);
 
-        public string FirstName { get; set; }
+        Task<bool> DeletePhysicalAsync(string id);
 
-        public string LastName { get; set; }
+        Task<List<T>> SelectAsync();
 
-        public DateTime? CreatedTime { get; private set; }
-
-        public DateTime? LastUpdatedTime { get; private set; }
-
-        public override string ToString()
-        {
-            return String.Format("{0} {1}", FirstName, LastName);
-        }
+        Task<T> SelectAsync(string id);
     }
 }

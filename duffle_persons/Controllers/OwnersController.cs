@@ -22,51 +22,90 @@ namespace duffle_persons.Controllers
     using System;
     using System.Collections.Generic;
     using System.Net;
+    using Boilerplate;
+    using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc;
     using Models;
+    using Processors.Interfaces;
     using Swashbuckle.SwaggerGen.Annotations;
 
+    /// <summary>
+    /// Class OwnersController.
+    /// </summary>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     [Route("api/[controller]")]
-    public class OwnersController : Controller
+    public class ownersController : Controller
     {
-        // GET api/owners/5
-        [HttpGet("ping")]
-        public string Ping()
+        public ownersController(IOwnersProcessor ownersProcessor, IHostingEnvironment hostingEnvironment)
         {
-            return "True";
+            HostingEnvironment = hostingEnvironment;
+            OwnersProcessor = ownersProcessor;
+        }
+
+        private IHostingEnvironment HostingEnvironment { get; set; }
+
+        private IOwnersProcessor OwnersProcessor { get; set; }
+
+        // DELETE api/owners/5
+        /// <summary>
+        /// Deletes the specified identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        [HttpDelete("{id}")]
+        public void Delete(Guid id)
+        {
         }
 
         // GET api/owners
+        /// <summary>
+        /// Gets this instance.
+        /// </summary>
+        /// <returns>IEnumerable&lt;System.String&gt;.</returns>
         [HttpGet]
         [SwaggerResponse(HttpStatusCode.OK, Type = typeof(IEnumerable<Owner>))]
         [SwaggerResponse(HttpStatusCode.BadRequest, Type = typeof(IEnumerable<Owner>))]
-        public IEnumerable<string> Get()
+        public IActionResult Get()
         {
-            return new string[] { "Mike Reith", "M.S.I. Morton" };
+            return Ok(OwnersProcessor.GetOwners());
         }
 
         // GET api/owners/5
+        /// <summary>
+        /// Gets the specified identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns>System.String.</returns>
         [HttpGet("{id}")]
         public string Get(Guid id)
         {
             return "value";
         }
 
+        [HttpGet("ping")]
+        public IActionResult Ping()
+        {
+            return Ok(new JSendBuilder().Success().Data(OwnersProcessor.PingData(HostingEnvironment)));
+        }
+
         // POST api/owners
+        /// <summary>
+        /// Posts the specified value.
+        /// </summary>
+        /// <param name="value">The value.</param>
         [HttpPost]
-        public void Post([FromBody]string value)
+        [Route("create")]
+        public void Create([FromBody]string value)
         {
         }
 
         // PUT api/owners/5
+        /// <summary>
+        /// Puts the specified identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="value">The value.</param>
         [HttpPut("{id}")]
         public void Put(Guid id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/owners/5
-        [HttpDelete("{id}")]
-        public void Delete(Guid id)
         {
         }
     }

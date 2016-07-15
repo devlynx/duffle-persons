@@ -17,29 +17,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-namespace duffle_persons.Models
+namespace duffle_persons.Processors.Implementations
 {
-    using System;
-    using Amazon.DynamoDBv2.DataModel;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Boilerplate;
+    using duffle_persons.Processors.Interfaces;
+    using Microsoft.AspNetCore.Hosting;
+    using Models;
+    using Repositories.Interfaces;
 
-    [DynamoDBTable("Owner")]
-    public class Owner : IDuffleData
+    public class OwnersProcessor : IOwnersProcessor
     {
-        [DynamoDBHashKey]
-        public Guid id { get; set; }
-
-        public string FirstName { get; set; }
-
-        public string LastName { get; set; }
-
-        public DateTime? CreatedTime { get; private set; }
-
-        public DateTime? LastUpdatedTime { get; private set; }
-
-        public override string ToString()
+        public OwnersProcessor(IOwnersRepository repository)
         {
-            return String.Format("{0} {1}", FirstName, LastName);
+            this.repository = repository;
+        }
+        private IOwnersRepository repository { get; set; }
+
+        public async Task<JSendBuilder> GetOwners()
+        {
+            List<Owner> owners = await repository.SelectAsync();
+
+            return new JSendBuilder()
+                .Success()
+                .Data(owners);
+        }
+
+        public IMicroserviceInfo PingData(IHostingEnvironment hostingEnvironment)
+        {
+            return new MicroserviceInfo { module = "owners", environment = hostingEnvironment.EnvironmentName };
         }
     }
 }
